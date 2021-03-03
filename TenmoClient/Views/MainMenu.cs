@@ -1,13 +1,17 @@
 ﻿using MenuFramework;
 using System;
+using System.Data.SqlClient;
 using System.Collections.Generic;
 using System.Text;
+using TenmoServer.Models;
+using TenmoServer.DAO;
 using TenmoClient.Data;
 
 namespace TenmoClient.Views
 {
     public class MainMenu : ConsoleMenu
     {
+        private AccountSqlDAO accountDAO;
 
         public MainMenu()
         { 
@@ -27,7 +31,12 @@ namespace TenmoClient.Views
 
         private MenuOptionResult ViewBalance()
         {
-            Console.WriteLine("Not yet implemented!");
+            AuthService authService = new AuthService();
+            
+            //Console.WriteLine($"Please tell me your UserID!");
+            //int userId = Convert.ToInt32(Console.ReadLine());
+            decimal balance = accountDAO.GetAccountBalance(UserService.GetUserId());
+            Console.WriteLine($"{balance:c2}");
             return MenuOptionResult.WaitAfterMenuSelection;
         }
 
