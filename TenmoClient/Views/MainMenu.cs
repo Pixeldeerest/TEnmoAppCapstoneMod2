@@ -108,6 +108,20 @@ namespace TenmoClient.Views
             // pull in authservice
             AuthService authService = new AuthService();
             // get list of users ids
+            List<API_User> list = authService.ListofAvailableUsers();
+
+            Console.WriteLine("--------------------------------------------");
+            Console.WriteLine("\tUsers");
+            Console.WriteLine("\tID \t\t Name");
+            Console.WriteLine("--------------------------------------------");
+
+            foreach (API_User userList in list)
+            {
+
+                Console.WriteLine($"\t{userList.UserId} \t\t {userList.Username}");
+            }
+            Console.WriteLine("--------------------------------------------");
+            Console.WriteLine();
 
             //pull transfer id info and convert user input to an int
 
