@@ -181,11 +181,11 @@ namespace TenmoClient
             }
         }
 
-        public List<Transfer> ViewTransferFromId(int transferId)
+        public Transfer ViewTransferFromId(int transferId)
         {
             RestRequest request = new RestRequest(API_BASE_URL + $"acccounts/transfers/{transferId}");
             client.Authenticator = new JwtAuthenticator(UserService.GetToken());
-            IRestResponse<List<Transfer>> response = client.Get<List<Transfer>>(request);
+            IRestResponse<Transfer> response = client.Get<Transfer>(request);
 
             if (response.ResponseStatus != ResponseStatus.Completed)
             {
