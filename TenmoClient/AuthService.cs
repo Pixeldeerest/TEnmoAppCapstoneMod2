@@ -14,17 +14,36 @@ namespace TenmoClient
 
         public decimal GetBalance()
         {
-            RestRequest request = new RestRequest(API_BASE_URL + "account/users");
+            RestRequest request = new RestRequest(API_BASE_URL + "accounts/users");
             client.Authenticator = new JwtAuthenticator(UserService.GetToken());
             IRestResponse<Account> response = client.Get<Account>(request);
+
+            if (response.ResponseStatus != ResponseStatus.Completed)
+            {
+                Console.WriteLine("An error occurred communicating with the server.");
+                return 0;
+            }
+            else if (!response.IsSuccessful)
+            {
+                if (!string.IsNullOrWhiteSpace(response.ErrorMessage))
+                {
+                    Console.WriteLine("An error message was received: " + response.ErrorMessage);
+                }
+                else
+                {
+                    Console.WriteLine("An error response was received from the server. The status code is " + (int)response.StatusCode);
+                }
+                return 0;
+            }
+            else
+            {
+                return response.Data.Balance;
+            }
             
-            CheckResponse(response);
-            
-            return response.Data.Balance;
         }
         public bool Transfer(Transfer transfer)
         {
-            RestRequest request = new RestRequest(API_BASE_URL + "account/users"); //possible just account, who really knows.
+            RestRequest request = new RestRequest(API_BASE_URL + "accounts/users"); //possible just account, who really knows.
             client.Authenticator = new JwtAuthenticator(UserService.GetToken());
             IRestResponse response = client.Post(request); //possible put, but for now who really knows. 
             if (response.ResponseStatus != ResponseStatus.Completed)
@@ -53,7 +72,7 @@ namespace TenmoClient
         }
         public List<Transfer> ViewAllTransfers()
         {
-            RestRequest request = new RestRequest(API_BASE_URL + "acccount/transfers");
+            RestRequest request = new RestRequest(API_BASE_URL + "acccounts/transfers");
             client.Authenticator = new JwtAuthenticator(UserService.GetToken());
             IRestResponse<List<Transfer>> response = client.Get<List<Transfer>>(request);
 
@@ -79,13 +98,7 @@ namespace TenmoClient
             {
                 return response.Data;
             }
-            
-
-
-
-
         }
-
 
         private static decimal CheckResponse(IRestResponse<Account> response)
         {
@@ -167,5 +180,33 @@ namespace TenmoClient
                 return response.Data;
             }
         }
-    }
+
+        public List<Transfer> ViewTransferFromId(int transferId)
+        {
+            RestRequest request = new RestRequest(API_BASE_URL + $"acccounts/transfers/{transferId}");
+            client.Authenticator = new JwtAuthenticator(UserService.GetToken());
+            IRestResponse<List<Transfer>> response = client.Get<List<Transfer>>(request);
+
+            if (response.ResponseStatus != ResponseStatus.Completed)
+            {
+                Console.WriteLine("An error occurred communicating with the server.");
+                return null;
+            }
+            else if (!response.IsSuccessful)
+            {
+                if (!string.IsNullOrWhiteSpace(response.ErrorMessage))
+                {
+                    Console.WriteLine("An error message was received: " + response.ErrorMessage);
+                }
+                else
+                {
+                    Console.WriteLine("An error response was received from the server. The status code is " + (int)response.StatusCode);
+                }
+                return null;
+            }
+            else
+            {
+                return response.Data;
+            }
+        }
 }

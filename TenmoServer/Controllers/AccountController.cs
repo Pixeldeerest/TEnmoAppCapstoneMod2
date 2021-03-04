@@ -10,7 +10,7 @@ using TenmoServer.Models;
 
 namespace TenmoServer.Controllers
 {
-    [Route("/account")]
+    [Route("/accounts")]
     [ApiController]
     [Authorize]
     public class AccountController : ControllerBase
@@ -25,8 +25,9 @@ namespace TenmoServer.Controllers
         }
 
         [HttpGet("users")]
-        public ActionResult<Account> GetAccount(int userId)
+        public ActionResult<Account> GetAccount()
         {
+            int userId = Convert.ToInt32(User.FindFirst("sub")?.Value);
             Account account = accountDAO.GetAccount(userId);
             if (account == null)
             {
@@ -53,8 +54,9 @@ namespace TenmoServer.Controllers
         }
 
         [HttpGet("transfers")]
-        public ActionResult<List<Transfer>> GetTransfers(int userId)
+        public ActionResult<List<Transfer>> GetTransfers()
         {
+            int userId = Convert.ToInt32(User.FindFirst("sub")?.Value);
             List<Transfer> transfers = accountDAO.GetTransfers(userId);
             if (transfers == null)
             {
