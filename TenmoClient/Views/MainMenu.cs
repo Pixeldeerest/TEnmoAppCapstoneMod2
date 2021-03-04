@@ -12,14 +12,15 @@ namespace TenmoClient.Views
     public class MainMenu : ConsoleMenu
     {
         private AccountSqlDAO accountDAO;
+        private UserSqlDAO userDAO;
 
         public MainMenu()
         { 
             AddOption("View your current balance", ViewBalance)
                 .AddOption("View your past transfers", ViewTransfers)
-                .AddOption("View your pending requests", ViewRequests)
+                //.AddOption("View your pending requests", ViewRequests)
                 .AddOption("Send TE bucks", SendTEBucks)
-                .AddOption("Request TE bucks", RequestTEBucks)
+                //.AddOption("Request TE bucks", RequestTEBucks)
                 .AddOption("Log in as different user", Logout)
                 .AddOption("Exit", Exit);
         }
@@ -37,29 +38,96 @@ namespace TenmoClient.Views
             return MenuOptionResult.WaitAfterMenuSelection;
         }
 
+        //$"acccounts/transfers/{transferId}
+        // "acccounts/transfers"
         private MenuOptionResult ViewTransfers()
         {
-            Console.WriteLine("Not yet implemented!");
+            Transfer transfer = new Transfer();
+            AuthService authService = new AuthService();
+            int userId = UserService.GetUserId();
+            List<Transfer> transfers = authService.ViewAllTransfers();
+
+            Console.WriteLine("-------------------------------------------");
+            Console.WriteLine("Transfer");
+            Console.WriteLine("ID\tFrom/To\t\t\tAmount");
+            Console.WriteLine("-------------------------------------------");
+            foreach(Transfer transfer1 in transfers)
+            {
+                string displayName;
+                displayName = (userId == transfer1.Account_To) ? $"From:\t{userDAO.GetUserName(transfer1.Account_From)}" : $"To:\t{userDAO.GetUserName(transfer1.Account_To)}";
+                Console.WriteLine($"{transfer1.Transfer_Id}\t{displayName}\t\t{transfer1.Amount}");
+            }
+            Console.WriteLine("-------------------------------------------");
+            Console.WriteLine();
+            Console.Write("Please enter transfer ID to view details (0 to cancel): ");
+            string input = Console.ReadLine();
+            int transferId = Convert.ToInt32(input);
+            if (transferId == 0)
+            {
+                return MenuOptionResult.DoNotWaitAfterMenuSelection;
+            }
+            
+            bool isTransferListed = false;
+            foreach (Transfer transfer1 in transfers)
+            {
+                if (transfer1.Transfer_Id == transferId)
+                {
+                    Console.WriteLine("--------------------------------------------");
+                    Console.WriteLine("Transfer Details");
+                    Console.WriteLine("--------------------------------------------");
+                    Console.WriteLine();
+                    Console.WriteLine($"Id: {transfer1.Transfer_Id}");
+                    Console.WriteLine($"From: {transfer1.Account_From}");
+                    Console.WriteLine($"To: {transfer1.Account_To}");
+                    string type;
+                    type = (userId == transfer1.Account_To) ? "Receive" : "Send";
+                    Console.WriteLine($"Type: {type}");
+                    Console.WriteLine($"Status: Approved");
+                    Console.WriteLine($"Amount: ${transfer1.Amount}");
+                    isTransferListed = true;
+                }
+            }
+            if (!isTransferListed)
+            {
+                Console.WriteLine("The ID you entered was not valid!");
+            }
+
             return MenuOptionResult.WaitAfterMenuSelection;
         }
 
-        private MenuOptionResult ViewRequests()
-        {
-            Console.WriteLine("Not yet implemented!");
-            return MenuOptionResult.WaitAfterMenuSelection;
-        }
+        //private MenuOptionResult ViewRequests()
+        //{
+        //    Console.WriteLine("Not yet implemented!");
+        //    return MenuOptionResult.WaitAfterMenuSelection;
+        //}
 
         private MenuOptionResult SendTEBucks()
         {
-            Console.WriteLine("Not yet implemented!");
+            //pull in Transfer
+            Transfer transfer = new Transfer();
+            // pull in authservice
+            AuthService authService = new AuthService();
+            // get list of users ids
+
+            //pull transfer id info and convert user input to an int
+
+            //put in user id logic. 
+
+            //user input logic 
+
+            // enter the amount you need  to send 
+
+            //check against balance. 
+
+            //transactions successful
             return MenuOptionResult.WaitAfterMenuSelection;
         }
 
-        private MenuOptionResult RequestTEBucks()
-        {
-            Console.WriteLine("Not yet implemented!");
-            return MenuOptionResult.WaitAfterMenuSelection;
-        }
+        //private MenuOptionResult RequestTEBucks()
+        //{
+        //    Console.WriteLine("Not yet implemented!");
+        //    return MenuOptionResult.WaitAfterMenuSelection;
+        //}
 
         private MenuOptionResult Logout()
         {

@@ -36,6 +36,7 @@ namespace TenmoServer.DAO
             return account;
         }
 
+
         public void TransferToRegUser(int userId, int accountToId, decimal amount)
         {
             Account account = GetAccount(userId);
@@ -85,7 +86,7 @@ namespace TenmoServer.DAO
                 {
                     conn.Open();
 
-                    SqlCommand cmd = new SqlCommand(@"SELECT * FROM transfers WHERE transferId = @transferId", conn);
+                    SqlCommand cmd = new SqlCommand(@"SELECT * FROM transfers" /*WHERE transfer_Id = @transferId*/, conn);
                     cmd.Parameters.AddWithValue("@transferId", transferId);
 
                     SqlDataReader rdr = cmd.ExecuteReader();
