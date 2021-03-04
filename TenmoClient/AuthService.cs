@@ -1,6 +1,7 @@
 ﻿using RestSharp;
 using RestSharp.Authenticators;
 using System;
+using System.Collections.Generic;
 using TenmoClient.Data;
 using TenmoServer.Models;
 
@@ -21,8 +22,69 @@ namespace TenmoClient
             
             return response.Data.Balance;
         }
+        public bool Transfer(Transfer transfer)
+        {
+            RestRequest request = new RestRequest(API_BASE_URL + "account/users"); //possible just account, who really knows.
+            client.Authenticator = new JwtAuthenticator(UserService.GetToken());
+            IRestResponse response = client.Post(request); //possible put, but for now who really knows. 
+            if (response.ResponseStatus != ResponseStatus.Completed)
+            {
+                Console.WriteLine("An error occurred communicating with the server.");
+                return false;
+            }
+            else if(!response.IsSuccessful)
+            {
+                if (!string.IsNullOrWhiteSpace(response.ErrorMessage))
+                {
+                    Console.WriteLine("An error message was received: " + response.ErrorMessage);
+                }
+                else
+                {
+                    Console.WriteLine("An error response was received from the server. The status code is " + (int)response.StatusCode);
+                }
+                return false;
+            }
+            else
+            {
+                return true;
+            }
 
 
+        }
+        public List<Transfer> ViewAllTransfers()
+        {
+            RestRequest request = new RestRequest(API_BASE_URL + "acccount/transfers");
+            client.Authenticator = new JwtAuthenticator(UserService.GetToken());
+            IRestResponse<List<Transfer>> response = client.Get<List<Transfer>>(request);
+
+
+            if (response.ResponseStatus != ResponseStatus.Completed)
+            {
+                Console.WriteLine("An error occurred communicating with the server.");
+                return null;
+            }
+            else if (!response.IsSuccessful)
+            {
+                if (!string.IsNullOrWhiteSpace(response.ErrorMessage))
+                {
+                    Console.WriteLine("An error message was received: " + response.ErrorMessage);
+                }
+                else
+                {
+                    Console.WriteLine("An error response was received from the server. The status code is " + (int)response.StatusCode);
+                }
+                return null;
+            }
+            else
+            {
+                return response.Data;
+            }
+            
+
+
+
+
+        }
 
 
         private static decimal CheckResponse(IRestResponse<Account> response)
