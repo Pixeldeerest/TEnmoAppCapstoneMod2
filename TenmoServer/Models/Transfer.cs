@@ -12,7 +12,7 @@ namespace TenmoServer.Models
         public int Transfer_Status_Id { get; set; }
         public int Account_From { get; set; }
         public int Account_To { get; set; }
-        public int Amount { get; set; }
+        public decimal Amount { get; set; }
     }
 
     public class TransferTypes
