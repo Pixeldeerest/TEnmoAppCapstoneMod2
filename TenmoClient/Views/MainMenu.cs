@@ -157,6 +157,7 @@ namespace TenmoClient.Views
             transfer.AccountTo = userInput;
             transfer.AccountFrom = UserService.GetUserId();
             Console.WriteLine("Please enter the amount you would like to transfer");
+            
             transfer.Amount = Convert.ToDecimal(Console.ReadLine());
             
            
