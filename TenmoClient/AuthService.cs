@@ -43,9 +43,10 @@ namespace TenmoClient
         }
         public bool Transfer(Transfer transfer)
         {
-            RestRequest request = new RestRequest(API_BASE_URL + "accounts/users"); //possible just account, who really knows.
+            RestRequest request = new RestRequest(API_BASE_URL + "accounts"); //possible just account, who really knows.
+            request.AddJsonBody(transfer);
             client.Authenticator = new JwtAuthenticator(UserService.GetToken());
-            IRestResponse response = client.Post(request); //possible put, but for now who really knows. 
+            IRestResponse response = client.Put(request); //possible put, but for now who really knows. 
             if (response.ResponseStatus != ResponseStatus.Completed)
             {
                 Console.WriteLine("An error occurred communicating with the server.");
@@ -97,9 +98,36 @@ namespace TenmoClient
             {
                 return response.Data;
             }
+        }
 
+        public User UserNameFromAccountId(int accountId)
+        {
+            RestRequest request = new RestRequest(API_BASE_URL + $"accounts/{accountId}/users");
+            client.Authenticator = new JwtAuthenticator(UserService.GetToken());
+            IRestResponse<User> response = client.Get<User>(request);
 
-        } 
+            if (response.ResponseStatus != ResponseStatus.Completed)
+            {
+                Console.WriteLine("An error occurred communicating with the server.");
+                return null;
+            }
+            else if (!response.IsSuccessful)
+            {
+                if (!string.IsNullOrWhiteSpace(response.ErrorMessage))
+                {
+                    Console.WriteLine("An error message was received: " + response.ErrorMessage);
+                }
+                else
+                {
+                    Console.WriteLine("An error response was received from the server. The status code is " + (int)response.StatusCode);
+                }
+                return null;
+            }
+            else
+            {
+                return response.Data;
+            }
+        }
 
         //sending an account name from an account id 
         public List<Transfer> ViewAllTransfers()

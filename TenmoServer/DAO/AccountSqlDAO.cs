@@ -56,7 +56,7 @@ namespace TenmoServer.DAO
                                 (Select transfer_status_id from transfer_statuses where transfer_status_desc = 'Approved'), 
                                 @userId, @accountToId, @amount)
                             UPDATE accounts set balance = balance - @amount where account_id = @userId
-                            UPDATE account set balance = balance + @amount where account_id = @accountToId
+                            UPDATE accounts set balance = balance + @amount where account_id = @accountToId
                             COMMIT TRANSACTION
                             ", conn);
                         cmd.Parameters.AddWithValue("@userId", userId);
@@ -116,7 +116,7 @@ namespace TenmoServer.DAO
                 {
                     conn.Open();
 
-                    SqlCommand cmd = new SqlCommand(@"SELECT username FROM users
+                    SqlCommand cmd = new SqlCommand(@"SELECT users.username, users.user_id, '' AS password_hash, '' AS salt FROM users
                                            JOIN accounts ON accounts.user_id = users.user_id
                                            WHERE account_id = @account_id",conn);
                     cmd.Parameters.AddWithValue(@"account_id", accountId);
@@ -141,12 +141,12 @@ namespace TenmoServer.DAO
         private Transfer RowToTransfer(SqlDataReader reader)
         {
             Transfer transfer = new Transfer();
-            transfer.Transfer_Id = Convert.ToInt32(reader["transfer_id"]);
-            transfer.Account_From = Convert.ToInt32(reader["account_from"]);
-            transfer.Account_To = Convert.ToInt32(reader["account_to"]);
+            transfer.TransferId = Convert.ToInt32(reader["transfer_id"]);
+            transfer.AccountFrom = Convert.ToInt32(reader["account_from"]);
+            transfer.AccountTo = Convert.ToInt32(reader["account_to"]);
             transfer.Amount = Convert.ToDecimal(reader["amount"]);
-            transfer.Transfer_Type_Id = Convert.ToInt32(reader["transfer_type_id"]);
-            transfer.Transfer_Status_Id = Convert.ToInt32(reader["transfer_status_id"]);
+            transfer.TransferTypeId = Convert.ToInt32(reader["transfer_type_id"]);
+            transfer.TransferStatusId = Convert.ToInt32(reader["transfer_status_id"]);
             return transfer;
         }
 

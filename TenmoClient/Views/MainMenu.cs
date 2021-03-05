@@ -47,6 +47,7 @@ namespace TenmoClient.Views
             int userId = UserService.GetUserId();
             List<Transfer> transfers = authService.ViewAllTransfers();
             List<API_User> users = authService.ListofAvailableUsers();
+            
             foreach(API_User user in users)
             {
                 if(userId == user.UserId)
@@ -58,22 +59,18 @@ namespace TenmoClient.Views
             Console.WriteLine("Transfer");
             Console.WriteLine("ID\tFrom/To\t\t\tAmount");
             Console.WriteLine("-------------------------------------------");
-
-
             string signInUser = UserService.GetUserName();
-            foreach(Transfer transferList in transfers)
+            foreach (Transfer transfer1 in transfers)
             {
+                string displayName;
+                //Make method that returns username from their accountId
+                //Call method for accountFrom
+                //Call method for accountTo
+                displayName = (userId == transfer1.AccountTo) ? $"From:\t{authService.UserNameFromAccountId(transfer1.AccountFrom).Username}" : $"To:\t{authService.UserNameFromAccountId(transfer1.AccountTo).Username}";
+                Console.WriteLine($"{transfer1.TransferId}\t{displayName}\t\t{transfer1.Amount}");
 
 
             }
-            //foreach (Transfer transfer1 in transfers)
-            //{
-            //   string displayName;
-            //   displayName = (userId == transfer1.Account_To) ? $"From:\t{userDAO.GetUserName(transfer1.Account_From)}" : $"To:\t{userDAO.GetUserName(transfer1.Account_To)}";
-            //   Console.WriteLine($"{transfer1.Transfer_Id}\t{displayName}\t\t{transfer1.Amount}");
-                
-
-            //}
             Console.WriteLine("-------------------------------------------");
             Console.WriteLine();
             Console.Write("Please enter transfer ID to view details (0 to cancel): ");
@@ -87,17 +84,17 @@ namespace TenmoClient.Views
             bool isTransferListed = false;
             foreach (Transfer transfer1 in transfers)
             {
-                if (transfer1.Transfer_Id == transferId)
+                if (transfer1.TransferId == transferId)
                 {
                     Console.WriteLine("--------------------------------------------");
                     Console.WriteLine("Transfer Details");
                     Console.WriteLine("--------------------------------------------");
                     Console.WriteLine();
-                    Console.WriteLine($"Id: {transfer1.Transfer_Id}");
-                    Console.WriteLine($"From: {transfer1.Account_From}");
-                    Console.WriteLine($"To: {transfer1.Account_To}");
+                    Console.WriteLine($"Id: {transfer1.TransferId}");
+                    Console.WriteLine($"From: {authService.UserNameFromAccountId(transfer1.AccountFrom).Username}");
+                    Console.WriteLine($"To: {authService.UserNameFromAccountId(transfer1.AccountTo).Username}");
                     string type;
-                    type = (userId == transfer1.Account_To) ? "Receive" : "Send";
+                    type = (userId == transfer1.AccountTo) ? "Receive" : "Send";
                     Console.WriteLine($"Type: {type}");
                     Console.WriteLine($"Status: Approved");
                     Console.WriteLine($"Amount: ${transfer1.Amount}");
@@ -157,8 +154,8 @@ namespace TenmoClient.Views
                 return MenuOptionResult.WaitAfterMenuSelection;
 
             }
-            transfer.Account_To = userInput;
-            transfer.Account_From = UserService.GetUserId();
+            transfer.AccountTo = userInput;
+            transfer.AccountFrom = UserService.GetUserId();
             Console.WriteLine("Please enter the amount you would like to transfer");
             transfer.Amount = Convert.ToDecimal(Console.ReadLine());
             

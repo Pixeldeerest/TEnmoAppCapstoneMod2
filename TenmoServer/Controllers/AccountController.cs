@@ -53,6 +53,21 @@ namespace TenmoServer.Controllers
             }
         }
 
+        [HttpGet("{accountId}/users")]
+        public ActionResult<User> GetUsers(int accountId)
+        {
+            User users = accountDAO.UserIdFromAccountID(accountId);
+            
+            if (users == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                return users;
+            }
+        }
+
         [HttpGet("transfers")]
         public ActionResult<List<Transfer>> GetTransfers()
         {
@@ -71,8 +86,8 @@ namespace TenmoServer.Controllers
         [HttpPut]
         public ActionResult Transfer(Transfer transfer)
         {
-            int userId = transfer.Account_From;
-            int accountToId = transfer.Account_To;
+            int userId = transfer.AccountFrom;
+            int accountToId = transfer.AccountTo;
             decimal amount = transfer.Amount;
 
             accountDAO.TransferToRegUser(userId, accountToId, amount);
