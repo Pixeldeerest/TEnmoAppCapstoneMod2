@@ -58,12 +58,22 @@ namespace TenmoClient.Views
             Console.WriteLine("Transfer");
             Console.WriteLine("ID\tFrom/To\t\t\tAmount");
             Console.WriteLine("-------------------------------------------");
-            foreach(Transfer transfer1 in transfers)
+
+
+            string signInUser = UserService.GetUserName();
+            foreach(Transfer transferList in transfers)
             {
-                string displayName;
-                displayName = (userId == transfer1.Account_To) ? $"From:\t{userDAO.GetUserName(transfer1.Account_From)}" : $"To:\t{userDAO.GetUserName(transfer1.Account_To)}";
-                Console.WriteLine($"{transfer1.Transfer_Id}\t{displayName}\t\t{transfer1.Amount}");
+
+
             }
+            //foreach (Transfer transfer1 in transfers)
+            //{
+            //   string displayName;
+            //   displayName = (userId == transfer1.Account_To) ? $"From:\t{userDAO.GetUserName(transfer1.Account_From)}" : $"To:\t{userDAO.GetUserName(transfer1.Account_To)}";
+            //   Console.WriteLine($"{transfer1.Transfer_Id}\t{displayName}\t\t{transfer1.Amount}");
+                
+
+            //}
             Console.WriteLine("-------------------------------------------");
             Console.WriteLine();
             Console.Write("Please enter transfer ID to view details (0 to cancel): ");
@@ -131,7 +141,39 @@ namespace TenmoClient.Views
             Console.WriteLine();
 
             //pull transfer id info and convert user input to an int
+            Console.WriteLine("Enter the ID of the user you would like to send some TEBucks to (0 to cancel)");
+            int userInput = Convert.ToInt32(Console.ReadLine());
+            if (userInput == 0)
+            {
+                Console.WriteLine("Transaction Canceled!");
+                Console.WriteLine("Please hit 'Enter' to contiune.");
+                return MenuOptionResult.WaitAfterMenuSelection;
+            }
+            // userInput doesnt equal User.UserID possible contains
+            if (userInput == UserService.GetUserId())
+            {
+                Console.WriteLine("You can not send money to yourself. Please use the correct user ID");
+                Console.WriteLine("Hit 'Enter' to return to the main menu");
+                return MenuOptionResult.WaitAfterMenuSelection;
 
+            }
+            transfer.Account_To = userInput;
+            transfer.Account_From = UserService.GetUserId();
+            Console.WriteLine("Please enter the amount you would like to transfer");
+            transfer.Amount = Convert.ToDecimal(Console.ReadLine());
+            
+           
+            
+            if(transfer.Amount > authService.GetBalance())
+            {
+                Console.WriteLine("You have an insufficient balance");
+            }
+            else
+            {
+                Console.WriteLine("Transactions was completed successful!");
+            }
+            authService.Transfer(transfer);
+            return MenuOptionResult.WaitAfterMenuSelection;
             //put in user id logic. 
 
             //user input logic 
@@ -141,7 +183,7 @@ namespace TenmoClient.Views
             //check against balance. 
 
             //transactions successful
-            return MenuOptionResult.WaitAfterMenuSelection;
+            
         }
 
         //private MenuOptionResult RequestTEBucks()

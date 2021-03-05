@@ -107,20 +107,26 @@ namespace TenmoServer.DAO
             return transfers;
         }
 
-        public void  UserIdFromAccountID(int accountId)
+        public User UserIdFromAccountID(int accountId)
         {
+            User userID = null;
             try
             {
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
                     conn.Open();
 
-                    SqlCommand cmd = new SqlCommand(@"SELECT * FROM users
+                    SqlCommand cmd = new SqlCommand(@"SELECT username FROM users
                                            JOIN accounts ON accounts.user_id = users.user_id
                                            WHERE account_id = @account_id",conn);
                     cmd.Parameters.AddWithValue(@"account_id", accountId);
 
                     SqlDataReader rdr = cmd.ExecuteReader();
+
+                    if (rdr.HasRows && rdr.Read())
+                    {
+                        userID = GetUserFromReader(rdr);
+                    }
                 }
             }
             catch (SqlException ex)
@@ -128,6 +134,7 @@ namespace TenmoServer.DAO
                 throw;
             }
 
+            return userID;
 
         }
 
@@ -150,6 +157,18 @@ namespace TenmoServer.DAO
             account.Balance = Convert.ToDecimal(rdr["balance"]);
             account.User_Id = Convert.ToInt32(rdr["user_id"]);
             return account;
+        }
+        private User GetUserFromReader(SqlDataReader reader)
+        {
+            User u = new User()
+            {
+                UserId = Convert.ToInt32(reader["user_id"]),
+                Username = Convert.ToString(reader["username"]),
+                PasswordHash = Convert.ToString(reader["password_hash"]),
+                Salt = Convert.ToString(reader["salt"]),
+            };
+
+            return u;
         }
     }
 }

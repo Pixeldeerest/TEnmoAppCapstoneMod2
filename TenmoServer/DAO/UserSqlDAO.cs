@@ -29,11 +29,11 @@ namespace TenmoServer.DAO
 
                     SqlCommand cmd = new SqlCommand("SELECT user_id, username, password_hash, salt FROM users WHERE username = @username", conn);
                     cmd.Parameters.AddWithValue("@username", username);
-                    SqlDataReader reader = cmd.ExecuteReader();
+                    SqlDataReader rdr = cmd.ExecuteReader();
 
-                    if (reader.HasRows && reader.Read())
+                    if (rdr.HasRows && rdr.Read())
                     {
-                        returnUser = GetUserFromReader(reader);
+                        returnUser = GetUserFromReader(rdr);
                     }
                 }
             }
