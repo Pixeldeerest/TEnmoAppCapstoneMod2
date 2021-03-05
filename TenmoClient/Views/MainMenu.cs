@@ -46,7 +46,14 @@ namespace TenmoClient.Views
             AuthService authService = new AuthService();
             int userId = UserService.GetUserId();
             List<Transfer> transfers = authService.ViewAllTransfers();
-
+            List<API_User> users = authService.ListofAvailableUsers();
+            foreach(API_User user in users)
+            {
+                if(userId == user.UserId)
+                {
+                    
+                }
+            }
             Console.WriteLine("-------------------------------------------");
             Console.WriteLine("Transfer");
             Console.WriteLine("ID\tFrom/To\t\t\tAmount");
